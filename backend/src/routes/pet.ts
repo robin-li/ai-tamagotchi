@@ -185,9 +185,9 @@ export default async function petRoutes(
     }
   );
 
-  // GET /api/pet/me
+  // GET /api/pet
   fastify.get(
-    '/me',
+    '/',
     {
       onRequest: [fastify.authenticate],
     },
@@ -229,11 +229,22 @@ export default async function petRoutes(
         const remainingResets = 5 - pet.resetCount;
         const dailyFeedLimit = Math.floor(pet.stamina / 20) + 1;
 
+        // Calculate today's feed count from FeedLog
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        const dailyFeedCount = await prisma.feedLog.count({
+          where: {
+            petId: pet.id,
+            createdAt: { gte: todayStart },
+          },
+        });
+
         return reply.status(200).send({
           pet: {
             ...pet,
             remainingResets,
             dailyFeedLimit,
+            dailyFeedCount,
           },
         });
       } catch (error) {
