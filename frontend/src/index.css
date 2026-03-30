@@ -5,6 +5,38 @@
 @layer base {
   body {
     @apply bg-cream text-brown-dark antialiased;
+    font-family: 'Press Start 2P', cursive;
     image-rendering: pixelated;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font-family: 'Press Start 2P', cursive;
+  }
+
+  ::selection {
+    background: #FFA500;
+    color: #FFF8E7;
+  }
+
+  /* Pixel-style scrollbar */
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #F5E6C8;
+    border-left: 2px solid #6B4226;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #FFA500;
+    border: 2px solid #6B4226;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #CC8400;
   }
 }

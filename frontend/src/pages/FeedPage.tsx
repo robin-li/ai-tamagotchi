@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { feedPet } from '../api/pet';
 import type { FeedResult, PetStats } from '../types';
 import DiceDisplay from '../components/DiceDisplay';
+import PixelButton from '../components/PixelButton';
 
 const ROLL_DURATION = 2000; // 骰子動畫持續 2 秒
 
@@ -90,12 +91,9 @@ export default function FeedPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-cream px-4">
         <p className="mb-6 font-pixel text-sm text-red-500">{error}</p>
-        <button
-          onClick={() => navigate('/game', { replace: true })}
-          className="border-2 border-brown bg-orange px-6 py-3 font-pixel text-xs text-white transition-colors hover:bg-orange-dark"
-        >
+        <PixelButton onClick={() => navigate('/game', { replace: true })}>
           返回
-        </button>
+        </PixelButton>
       </div>
     );
   }
@@ -172,15 +170,15 @@ export default function FeedPage() {
             )}
 
             {/* 繼續按鈕 */}
-            <motion.button
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              onClick={handleContinue}
-              className="border-2 border-brown bg-orange px-8 py-3 font-pixel text-xs text-white transition-colors hover:bg-orange-dark"
             >
-              繼續 →
-            </motion.button>
+              <PixelButton onClick={handleContinue}>
+                繼續 →
+              </PixelButton>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
