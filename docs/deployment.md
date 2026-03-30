@@ -65,3 +65,26 @@ launchctl list | grep cloudflared-tamagotchi
 # 查看 tunnel log
 tail -f ~/.cloudflared/tamagotchi-tunnel.log
 ```
+
+## LaunchAgent 設定（T28）
+
+LaunchAgent plist 檔案位置：
+
+| 服務 | Plist |
+|------|-------|
+| Docker Compose (app) | `~/Library/LaunchAgents/com.openclaw.tamagotchi.plist` |
+| Cloudflare Tunnel | `~/Library/LaunchAgents/com.openclaw.cloudflared-tamagotchi.plist` |
+
+### 啟動指令
+
+```bash
+launchctl load ~/Library/LaunchAgents/com.openclaw.tamagotchi.plist
+launchctl load ~/Library/LaunchAgents/com.openclaw.cloudflared-tamagotchi.plist
+```
+
+### 停止指令
+
+```bash
+launchctl unload ~/Library/LaunchAgents/com.openclaw.tamagotchi.plist
+launchctl unload ~/Library/LaunchAgents/com.openclaw.cloudflared-tamagotchi.plist
+```
