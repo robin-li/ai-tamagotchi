@@ -7,6 +7,7 @@ import PixelSprite from '../components/PixelSprite';
 import PixelButton from '../components/PixelButton';
 import NotificationPrompt from '../components/NotificationPrompt';
 import usePushNotification from '../hooks/usePushNotification';
+import { getPetFromCache } from '../services/offlineStorage';
 
 /** 距離上次餵食是否超過 1.5 小時 */
 function isHungry(lastFedAt: string): boolean {
@@ -51,8 +52,21 @@ export default function GamePage() {
     }
   }, [pet, checkAndNotify]);
 
-  // --- 載入中 ---
+  // --- 載入中：離線時嘗試使用快取 ---
   if (isLoading) {
+    if (!navigator.onLine) {
+      const cached = getPetFromCache();
+      if (cached) {
+        return <OfflineGameView pet={cached} navigate={navigate} />;
+      }
+      return (
+        <div className="flex min-h-screen items-center justify-center bg-cream">
+          <p className="font-pixel text-brown text-center text-xs px-4">
+            📴 無網路且無快取資料，請連線後再試
+          </p>
+        </div>
+      );
+    }
     return (
       <div className="flex min-h-screen items-center justify-center bg-cream">
         <p className="animate-bounce font-pixel text-brown">載入中...</p>
@@ -123,6 +137,51 @@ export default function GamePage() {
       {supported && (
         <NotificationPrompt permission={permission} onRequest={requestPermission} />
       )}
+    </div>
+  );
+}
+
+/** 離線時的唯讀遊戲畫面 */
+function OfflineGameView({ pet, navigate }: { pet: import('../types').Pet; navigate: ReturnType<typeof useNavigate> }) {
+  const hungry = isHungry(pet.lastFedAt);
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login', { replace: true });
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col items-center bg-cream px-4 py-6">
+      <div className="mb-4 sm:mb-6 flex w-full max-w-md items-center justify-between">
+        <h1 className="font-pixel text-xs sm:text-sm text-brown-dark">{pet.name}</h1>
+        <PixelButton variant="secondary" onClick={handleLogout} className="!px-3 !py-1 !text-[10px] !border-2">
+          登出
+        </PixelButton>
+      </div>
+
+      <div className="mb-4 flex flex-col items-center">
+        <PixelSprite stage={pet.stage} size="lg" />
+        <p className="mt-3 font-pixel text-xs text-brown">{pet.name}</p>
+        <p className="mt-1 font-pixel text-[10px] text-brown-light">
+          累計餵食 {pet.totalFeedings} 次
+        </p>
+      </div>
+
+      {hungry && (
+        <div className="mb-4 w-full max-w-md animate-pulse border-2 border-red-500 bg-red-100 p-3 text-center font-pixel text-[10px] text-red-700">
+          &#x26A0;&#xFE0F; 電子雞餓了！快來餵食！
+        </div>
+      )}
+
+      <div className="mb-4 grid w-full max-w-md grid-cols-2 gap-2 sm:gap-3">
+        <StatBar icon="❤️" label="生命" value={pet.stats.health} warningThreshold={30} />
+        <StatBar icon="⚡" label="體力" value={pet.stats.stamina} />
+        <StatBar icon="🍽️" label="胃口" value={pet.stats.appetite} />
+        <StatBar icon="📏" label="體型" value={pet.stats.size} />
+      </div>
+
+      <PixelButton disabled className="w-full max-w-md !py-4 !text-sm">
+        📴 離線中，無法餵食
+      </PixelButton>
     </div>
   );
 }
