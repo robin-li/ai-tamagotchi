@@ -104,12 +104,12 @@ export default function FeedPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-cream px-4">
       {/* 標題 */}
-      <h1 className="mb-8 font-pixel text-sm text-brown-dark">
+      <h1 className="mb-4 sm:mb-8 font-pixel text-xs sm:text-sm text-brown-dark">
         {isRolling ? '擲骰中...' : '餵食結果'}
       </h1>
 
       {/* 骰子區 */}
-      <div className="mb-8 flex gap-6">
+      <div className="mb-4 sm:mb-8 flex gap-3 sm:gap-6">
         <DiceDisplay value={diceValues[0]} isRolling={isRolling} />
         <DiceDisplay value={diceValues[1]} isRolling={isRolling} />
       </div>
@@ -129,7 +129,7 @@ export default function FeedPage() {
             </p>
 
             {/* 事件名稱 */}
-            <h2 className="mb-4 font-pixel text-2xl text-brown-dark">
+            <h2 className="mb-4 font-pixel text-lg sm:text-2xl text-brown-dark">
               {EVENT_TABLE[result.total] ?? result.eventName}
             </h2>
 
@@ -175,7 +175,7 @@ export default function FeedPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <PixelButton onClick={handleContinue}>
+              <PixelButton onClick={handleContinue} className="w-full sm:w-auto">
                 繼續 →
               </PixelButton>
             </motion.div>

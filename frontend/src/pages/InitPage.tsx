@@ -56,9 +56,9 @@ export default function InitPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-cream p-4">
-      <div className="w-full max-w-md space-y-6 border-4 border-brown bg-cream-dark p-8">
+      <div className="w-full max-w-md space-y-5 sm:space-y-6 border-4 border-brown bg-cream-dark p-4 sm:p-8">
         {/* Title */}
-        <h1 className="text-center font-pixel text-lg text-brown">
+        <h1 className="text-center font-pixel text-sm sm:text-lg text-brown">
           初始化你的電子雞
         </h1>
 
@@ -73,7 +73,7 @@ export default function InitPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="輸入電子雞名字..."
-            className="w-full border-2 border-brown bg-cream px-3 py-2 font-pixel text-xs text-brown-dark outline-none placeholder:text-brown-light focus:border-orange"
+            className="w-full border-2 border-brown bg-cream px-3 py-2 font-pixel text-xs text-brown-dark outline-none placeholder:text-brown-light focus:border-orange min-h-[48px]"
           />
           {name.length > 0 && !nameValid && (
             <p className="font-pixel text-[10px] text-red-500">
@@ -84,7 +84,7 @@ export default function InitPage() {
 
         {/* Stats display */}
         {stats && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 min-[361px]:grid-cols-2 gap-3">
             {STAT_CONFIG.map(({ key, icon, label }) => (
               <div
                 key={key}

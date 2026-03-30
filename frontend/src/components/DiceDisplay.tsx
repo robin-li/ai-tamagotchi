@@ -23,7 +23,7 @@ export default function DiceDisplay({ value, isRolling }: DiceDisplayProps) {
 
   return (
     <motion.div
-      className="flex h-28 w-28 items-center justify-center border-4 border-brown bg-cream-dark"
+      className="flex h-20 w-20 sm:h-28 sm:w-28 items-center justify-center border-4 border-brown bg-cream-dark"
       animate={
         isRolling
           ? { rotate: [0, 10, -10, 5, -5, 0], scale: [1, 1.05, 0.95, 1] }
@@ -35,7 +35,7 @@ export default function DiceDisplay({ value, isRolling }: DiceDisplayProps) {
           : { type: 'spring', stiffness: 300, damping: 20 }
       }
     >
-      <span className="text-7xl leading-none">{face}</span>
+      <span className="text-5xl sm:text-7xl leading-none">{face}</span>
     </motion.div>
   );
 }

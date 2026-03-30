@@ -23,7 +23,7 @@ export default function PixelButton({
 }: PixelButtonProps) {
   return (
     <button
-      className={`border-4 px-6 py-3 font-pixel text-xs shadow-pixel transition-all disabled:opacity-50 disabled:pointer-events-none ${VARIANT_STYLES[variant]} ${className}`}
+      className={`border-4 px-4 sm:px-6 py-3 font-pixel text-xs shadow-pixel transition-all min-h-[48px] disabled:opacity-50 disabled:pointer-events-none ${VARIANT_STYLES[variant]} ${className}`}
       {...rest}
     >
       {children}

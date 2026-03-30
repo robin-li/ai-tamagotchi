@@ -64,8 +64,8 @@ export default function GamePage() {
   return (
     <div className="flex min-h-screen flex-col items-center bg-cream px-4 py-6">
       {/* 頂部：名字 + 登出 */}
-      <div className="mb-6 flex w-full max-w-md items-center justify-between">
-        <h1 className="font-pixel text-sm text-brown-dark">{pet.name}</h1>
+      <div className="mb-4 sm:mb-6 flex w-full max-w-md items-center justify-between">
+        <h1 className="font-pixel text-xs sm:text-sm text-brown-dark">{pet.name}</h1>
         <PixelButton variant="secondary" onClick={handleLogout} className="!px-3 !py-1 !text-[10px] !border-2">
           登出
         </PixelButton>
@@ -88,7 +88,7 @@ export default function GamePage() {
       )}
 
       {/* 屬性面板 */}
-      <div className="mb-4 grid w-full max-w-md grid-cols-2 gap-3">
+      <div className="mb-4 grid w-full max-w-md grid-cols-2 gap-2 sm:gap-3">
         <StatBar icon="❤️" label="生命" value={pet.stats.health} warningThreshold={30} />
         <StatBar icon="⚡" label="體力" value={pet.stats.stamina} />
         <StatBar icon="🍽️" label="胃口" value={pet.stats.appetite} />
