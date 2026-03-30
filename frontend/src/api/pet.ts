@@ -13,10 +13,13 @@ export async function getPet(): Promise<Pet> {
   return data;
 }
 
-/** 餵食電子雞 */
+/** 餵食電子雞（後端回傳 dice1/dice2，轉換為 dice: [number, number]） */
 export async function feedPet(): Promise<FeedResult> {
-  const { data } = await client.post<FeedResult>('/pet/feed');
-  return data;
+  const { data } = await client.post<Omit<FeedResult, 'dice'> & { dice1: number; dice2: number }>('/pet/feed');
+  return {
+    ...data,
+    dice: [data.dice1, data.dice2],
+  };
 }
 
 /** 取得今日餵食次數 */
