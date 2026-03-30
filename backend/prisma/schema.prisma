@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ========== Enums ==========
+
+enum Stage {
+  egg
+  infant
+  growing
+  mature
+  elder
+}
+
+// ========== Models ==========
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  pets Pet[]
+
+  @@map("users")
+}
+
+model Pet {
+  id         String   @id @default(uuid())
+  userId     String
+  name       String
+  hp         Int      @default(100)
+  stamina    Int      @default(100)
+  appetite   Int      @default(50)
+  bodySize   Int      @default(50)
+  resetCount Int      @default(0)
+  feedCount  Int      @default(0)
+  stage      Stage    @default(egg)
+  isAlive    Boolean  @default(true)
+  lastFedAt  DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  feedLogs FeedLog[]
+
+  @@map("pets")
+}
+
+model FeedLog {
+  id          String   @id @default(uuid())
+  petId       String
+  dice1       Int
+  dice2       Int
+  total       Int
+  eventName   String
+  statChanges Json
+  createdAt   DateTime @default(now())
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@map("feed_logs")
+}

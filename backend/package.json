@@ -7,6 +7,14 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint . --ext ts",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "prisma generate"
+  },
+  "devDependencies": {
+    "dotenv": "^16.6.1",
+    "prisma": "^7.6.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.6.0"
   }
 }
