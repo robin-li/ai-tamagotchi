@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  lint-and-test-backend:
+    name: Backend Lint & Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: tamagotchi
+          POSTGRES_PASSWORD: tamagotchi_pass
+          POSTGRES_DB: tamagotchi_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install backend deps
+        working-directory: ./backend
+        run: npm ci
+      - name: Lint backend
+        working-directory: ./backend
+        run: npm run lint
+      - name: Run backend tests
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgresql://tamagotchi:tamagotchi_pass@localhost:5432/tamagotchi_test
+          JWT_SECRET: test_secret
+        run: npm test
+
+  lint-and-test-frontend:
+    name: Frontend Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install frontend deps
+        working-directory: ./frontend
+        run: npm ci
+      - name: Lint frontend
+        working-directory: ./frontend
+        run: npm run lint
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm test

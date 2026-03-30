@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tamagotchi-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-tamagotchi}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-tamagotchi_pass}
+      POSTGRES_DB: ${DB_NAME:-tamagotchi}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-tamagotchi}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tamagotchi-backend
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-tamagotchi}:${DB_PASSWORD:-tamagotchi_pass}@postgres:5432/${DB_NAME:-tamagotchi}
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_production}
+      PORT: 3000
+      NODE_ENV: ${NODE_ENV:-production}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tamagotchi-frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
