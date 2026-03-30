@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,7 +29,7 @@ const STAT_LABELS: Record<keyof PetStats, { icon: string; label: string }> = {
   size:     { icon: '📏', label: '體型' },
 };
 
-type Phase = 'rolling' | 'result' | 'done';
+type Phase = 'rolling' | 'result';
 
 export default function FeedPage() {
   const navigate = useNavigate();
@@ -71,16 +71,16 @@ export default function FeedPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function tryShowResult() {
+  const tryShowResult = useCallback(() => {
     const elapsed = Date.now() - rollStartRef.current;
     if (apiDoneRef.current && elapsed >= ROLL_DURATION && resultRef.current) {
       setResult(resultRef.current);
       setPhase('result');
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleContinue() {
-    setPhase('done');
     queryClient.invalidateQueries({ queryKey: ['pet'] });
     navigate('/game', { replace: true });
   }
