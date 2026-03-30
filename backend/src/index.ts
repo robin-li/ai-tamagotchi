@@ -3,6 +3,7 @@ import 'dotenv/config';
 import authPlugin from './plugins/auth';
 import authRoutes from './routes/auth';
 import petRoutes from './routes/pet';
+import { startDecayJob } from './jobs/decayJob';
 
 const fastify = Fastify({
   logger: {
@@ -39,6 +40,9 @@ const start = async () => {
     const host = process.env.HOST || '0.0.0.0';
 
     await fastify.listen({ port, host });
+
+    // 啟動衰退排程
+    startDecayJob();
 
     fastify.log.info(`Server is running on http://${host}:${port}`);
     fastify.log.info(`Health check: http://${host}:${port}/health`);
