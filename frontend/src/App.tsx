@@ -1,15 +1,23 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const token = localStorage.getItem('token');
+  if (!token) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
 
 function App() {
   return (
     <div className="min-h-screen bg-cream text-brown-dark">
       <Routes>
-        <Route path="/login" element={<Placeholder page="登入" />} />
-        <Route path="/register" element={<Placeholder page="註冊" />} />
-        <Route path="/init" element={<Placeholder page="電子雞初始化" />} />
-        <Route path="/game" element={<Placeholder page="主遊戲" />} />
-        <Route path="/feed" element={<Placeholder page="餵食動畫" />} />
-        <Route path="/death" element={<Placeholder page="死亡" />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/init" element={<PrivateRoute><Placeholder page="電子雞初始化" /></PrivateRoute>} />
+        <Route path="/game" element={<PrivateRoute><Placeholder page="主遊戲" /></PrivateRoute>} />
+        <Route path="/feed" element={<PrivateRoute><Placeholder page="餵食動畫" /></PrivateRoute>} />
+        <Route path="/death" element={<PrivateRoute><Placeholder page="死亡" /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </div>
