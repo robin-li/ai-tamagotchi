@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getPet, getDailyFeedCount } from '../api/pet';
+import { getPet } from '../api/pet';
 import type { GrowthStage } from '../types';
 import StatBar from '../components/StatBar';
 
@@ -32,17 +33,20 @@ export default function GamePage() {
     retry: 1,
   });
 
-  const { data: feedInfo } = useQuery({
-    queryKey: ['dailyFeed'],
-    queryFn: getDailyFeedCount,
-    refetchInterval: 30_000,
-    enabled: !!pet,
-  });
+  // TODO: T10 完成後改接真實 GET /api/pet/feed/today
+  const feedInfo = { count: 0, max: 3 };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login', { replace: true });
   };
+
+  // 錯誤時導向初始化頁（useEffect 避免渲染中 navigate 警告）
+  useEffect(() => {
+    if (isError || (!isLoading && !pet)) {
+      navigate('/init', { replace: true });
+    }
+  }, [isError, isLoading, pet, navigate]);
 
   // --- 載入中 ---
   if (isLoading) {
@@ -53,16 +57,14 @@ export default function GamePage() {
     );
   }
 
-  // --- 錯誤 / 電子雞不存在 ---
+  // --- 錯誤 / 電子雞不存在（等 useEffect 導向）---
   if (isError || !pet) {
-    // 若 pet 不存在，導向初始化頁
-    navigate('/init', { replace: true });
     return null;
   }
 
-  const remaining = feedInfo ? feedInfo.max - feedInfo.count : 0;
-  const maxFeeds = feedInfo?.max ?? 0;
-  const feedsUsed = feedInfo?.count ?? 0;
+  const remaining = feedInfo.max - feedInfo.count;
+  const maxFeeds = feedInfo.max;
+  const feedsUsed = feedInfo.count;
   const canFeed = remaining > 0;
   const hungry = isHungry(pet.lastFedAt);
 
