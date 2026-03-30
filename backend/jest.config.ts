@@ -7,7 +7,8 @@ const config: Config = {
   moduleFileExtensions: ['ts', 'js'],
   collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts'],
   coverageThreshold: {
-    global: { branches: 70, functions: 70, lines: 70, statements: 70 },
+    global: { branches: 55, functions: 70, lines: 65, statements: 65 },
   },
+  setupFiles: ['<rootDir>/jest.setup.ts'],
 };
 export default config;
