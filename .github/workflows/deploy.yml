@@ -1,0 +1,74 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Docker Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── JWT_SECRET 長度驗證（T12 安全審計 H1）─────────────────────────────
+      - name: Validate JWT_SECRET length
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: |
+          if [[ -z "${JWT_SECRET}" ]]; then
+            echo "::error::JWT_SECRET secret 未設定"
+            exit 1
+          fi
+          if [[ ${#JWT_SECRET} -lt 32 ]]; then
+            echo "::error::JWT_SECRET 長度不足（需 ≥32 字元，目前 ${#JWT_SECRET} 字元）"
+            exit 1
+          fi
+          echo "JWT_SECRET 驗證通過（長度：${#JWT_SECRET}）"
+
+      # ── Backend 測試 ────────────────────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run backend tests
+        working-directory: backend
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          DATABASE_URL: postgresql://tamagotchi:tamagotchi_pass@localhost:5432/tamagotchi
+          NODE_ENV: test
+        run: npm test
+
+      # ── Frontend 建置測試 ────────────────────────────────────────────────────
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+        run: npm run build
+
+      # ── 部署到正式伺服器（SSH）─────────────────────────────────────────────
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            git pull origin main --ff-only
+            bash deploy.sh
