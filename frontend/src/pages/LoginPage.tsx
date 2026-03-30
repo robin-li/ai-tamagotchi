@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
 import { AxiosError } from 'axios';
+import PixelButton from '../components/PixelButton';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -96,13 +97,9 @@ export default function LoginPage() {
             記住我
           </label>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full border-2 border-brown-dark bg-orange p-3 font-pixel text-xs text-cream hover:bg-orange-dark disabled:opacity-50"
-          >
+          <PixelButton type="submit" disabled={loading} className="w-full">
             {loading ? '登入中...' : '登入'}
-          </button>
+          </PixelButton>
         </form>
 
         <p className="mt-6 text-center font-pixel text-xs text-brown-light">

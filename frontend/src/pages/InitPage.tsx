@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { initPet } from '../api/pet';
 import type { PetStats } from '../types';
+import PixelButton from '../components/PixelButton';
 
 const MAX_RESETS = 5;
 
@@ -54,8 +55,8 @@ export default function InitPage() {
   const canRoll = stats === null || resetsLeft > 0;
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
+    <div className="flex min-h-screen items-center justify-center bg-cream p-4">
+      <div className="w-full max-w-md space-y-6 border-4 border-brown bg-cream-dark p-8">
         {/* Title */}
         <h1 className="text-center font-pixel text-lg text-brown">
           初始化你的電子雞
@@ -111,22 +112,23 @@ export default function InitPage() {
         )}
 
         {/* Roll button */}
-        <button
+        <PixelButton
           onClick={handleRoll}
           disabled={!canRoll || mutation.isPending}
-          className="w-full border-2 border-brown bg-orange py-3 font-pixel text-xs text-brown-dark transition-colors hover:bg-orange-dark active:bg-orange-dark disabled:opacity-40"
+          className="w-full"
         >
           🎲 {stats === null ? '隨機初始化' : '重新骰屬性'}
-        </button>
+        </PixelButton>
 
         {/* Confirm button */}
-        <button
+        <PixelButton
+          variant="secondary"
           onClick={() => mutation.mutate()}
           disabled={!canConfirm || mutation.isPending}
-          className="w-full border-2 border-brown bg-orange-light py-3 font-pixel text-xs text-brown-dark transition-colors hover:bg-orange active:bg-orange disabled:opacity-40"
+          className="w-full"
         >
           {mutation.isPending ? '送出中...' : '✅ 確認，開始遊戲'}
-        </button>
+        </PixelButton>
 
         {/* Error */}
         {mutation.isError && (

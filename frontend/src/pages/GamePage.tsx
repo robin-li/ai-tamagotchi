@@ -2,16 +2,9 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getPet } from '../api/pet';
-import type { GrowthStage } from '../types';
 import StatBar from '../components/StatBar';
-
-const STAGE_EMOJI: Record<GrowthStage, string> = {
-  egg: '\u{1F95A}',
-  baby: '\u{1F423}',
-  child: '\u{1F425}',
-  adult: '\u{1F414}',
-  elder: '\u{1F474}\u{1F414}',
-};
+import PixelSprite from '../components/PixelSprite';
+import PixelButton from '../components/PixelButton';
 
 /** 距離上次餵食是否超過 1.5 小時 */
 function isHungry(lastFedAt: string): boolean {
@@ -73,17 +66,14 @@ export default function GamePage() {
       {/* 頂部：名字 + 登出 */}
       <div className="mb-6 flex w-full max-w-md items-center justify-between">
         <h1 className="font-pixel text-sm text-brown-dark">{pet.name}</h1>
-        <button
-          onClick={handleLogout}
-          className="border-2 border-brown bg-cream-dark px-3 py-1 font-pixel text-[10px] text-brown transition-colors hover:bg-brown hover:text-cream"
-        >
+        <PixelButton variant="secondary" onClick={handleLogout} className="!px-3 !py-1 !text-[10px] !border-2">
           登出
-        </button>
+        </PixelButton>
       </div>
 
       {/* 中央主視覺 */}
       <div className="mb-4 flex flex-col items-center">
-        <span className="animate-float text-8xl">{STAGE_EMOJI[pet.stage]}</span>
+        <PixelSprite stage={pet.stage} size="lg" />
         <p className="mt-3 font-pixel text-xs text-brown">{pet.name}</p>
         <p className="mt-1 font-pixel text-[10px] text-brown-light">
           累計餵食 {pet.totalFeedings} 次
@@ -111,17 +101,13 @@ export default function GamePage() {
       </p>
 
       {/* 餵食按鈕 */}
-      <button
+      <PixelButton
         disabled={!canFeed}
         onClick={() => navigate('/feed')}
-        className={`w-full max-w-md border-4 border-orange-dark px-6 py-4 font-pixel text-sm transition-all ${
-          canFeed
-            ? 'bg-orange text-white hover:-translate-y-0.5 hover:bg-orange-dark hover:shadow-lg active:translate-y-0'
-            : 'cursor-not-allowed bg-gray-300 text-gray-500'
-        }`}
+        className="w-full max-w-md !py-4 !text-sm"
       >
         {canFeed ? '🍽️ 餵食！' : '今日餵食次數已用完'}
-      </button>
+      </PixelButton>
     </div>
   );
 }

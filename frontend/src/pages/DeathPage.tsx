@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
+import PixelButton from '../components/PixelButton';
 
 export default function DeathPage() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function DeathPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#F5E6D3] px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-cream px-4">
       {/* 墓碑區 */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -75,15 +76,15 @@ export default function DeathPage() {
       />
 
       {/* 領養新電子雞按鈕 */}
-      <motion.button
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2.2, duration: 0.6 }}
-        onClick={handleAdopt}
-        className="border-4 border-orange-dark bg-orange px-6 py-4 font-pixel text-xs text-white transition-all hover:-translate-y-0.5 hover:bg-orange-dark hover:shadow-lg active:translate-y-0"
       >
-        🌱 領養新電子雞
-      </motion.button>
+        <PixelButton onClick={handleAdopt}>
+          🌱 領養新電子雞
+        </PixelButton>
+      </motion.div>
     </div>
   );
 }

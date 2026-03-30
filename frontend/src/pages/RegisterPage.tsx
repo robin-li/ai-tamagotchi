@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../api/auth';
 import { AxiosError } from 'axios';
+import PixelButton from '../components/PixelButton';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -99,13 +100,9 @@ export default function RegisterPage() {
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full border-2 border-brown-dark bg-orange p-3 font-pixel text-xs text-cream hover:bg-orange-dark disabled:opacity-50"
-          >
+          <PixelButton type="submit" disabled={loading} className="w-full">
             {loading ? '註冊中...' : '註冊'}
-          </button>
+          </PixelButton>
         </form>
 
         <p className="mt-6 text-center font-pixel text-xs text-brown-light">
