@@ -1,6 +1,6 @@
 # 🗺️ AI 電子雞 — 開發計畫
 
-> 版本：v1.4 | 日期：2026-03-30 | 狀態：待確認
+> 版本：v1.5 | 日期：2026-03-30 | 狀態：待確認
 
 ---
 
@@ -128,67 +128,78 @@ Agent 遇到問題
 
 ## 四、任務清單
 
+### 模型使用規範
+
+| 模型 | 適用場景 |
+|------|---------|
+| **opus** | 複雜架構設計、核心業務邏輯、安全審計、整合測試、需要深度推理的任務 |
+| **sonnet** | 標準 CRUD API、UI 元件、設定檔、文件撰寫、測試程式碼 |
+
+> 各 agent 在執行 Task 前，依下表指定模型執行。若 sonnet 執行中遇到複雜問題無法解決，可升級為 opus。
+
+---
+
 ### Phase 0：基礎建設
 
-| Task ID | 任務名稱 | 負責人 | 前置任務 | 驗收條件 |
-|---------|---------|--------|---------|---------|
-| T01 | 建立 Monorepo 骨架（frontend/ + backend/ 目錄結構） | A1 | — | 目錄結構推上 main，frontend/backend 各有 package.json |
-| T02 | 設定 Docker Compose（frontend + backend + postgres） | A1 | T01 | `docker-compose up` 可啟動三個服務 |
-| T03 | 設定 GitHub Actions CI（lint + test） | A1 | T01 | PR 自動觸發 CI，失敗時阻擋合併 |
-| T04 | 建立 GitHub Issue 模板與 Labels | A1 | — | Labels 與 Issue 模板建立完成 |
+| Task ID | 任務名稱 | 負責人 | 模型 | 前置任務 | 驗收條件 |
+|---------|---------|--------|------|---------|---------|
+| T01 | 建立 Monorepo 骨架（frontend/ + backend/ 目錄結構） | A1 | sonnet | — | 目錄結構推上 main，frontend/backend 各有 package.json |
+| T02 | 設定 Docker Compose（frontend + backend + postgres） | A1 | sonnet | T01 | `docker-compose up` 可啟動三個服務 |
+| T03 | 設定 GitHub Actions CI（lint + test） | A1 | sonnet | T01 | PR 自動觸發 CI，失敗時阻擋合併 |
+| T04 | 建立 GitHub Issue 模板與 Labels | A1 | sonnet | — | Labels 與 Issue 模板建立完成 |
 
 ---
 
 ### Phase 1：後端核心
 
-| Task ID | 任務名稱 | 負責人 | 前置任務 | 驗收條件 |
-|---------|---------|--------|---------|---------|
-| T05 | Prisma Schema 設計（User / Pet / FeedLog） | A3 | T02 | Schema 通過 `prisma validate`，migration 可執行 |
-| T06 | 用戶註冊 API（POST /auth/register） | A3 | T05 | 可建立帳號，密碼 bcrypt 加密，回傳 JWT |
-| T07 | 用戶登入 API（POST /auth/login） | A3 | T06 | 正確帳密回傳 JWT，錯誤帳密回傳 401 |
-| T08 | 電子雞初始化 API（POST /pet/init） | A3 | T05 | 可建立電子雞、隨機屬性、檢查重置次數上限 5 次 |
-| T09 | 電子雞查詢 API（GET /pet） | A3 | T08 | 回傳當前電子雞完整屬性與狀態 |
-| T10 | 餵食 API（POST /pet/feed） | A3 | T09 | 骰子邏輯正確，屬性更新，記錄 FeedLog，檢查每日次數上限 |
-| T11 | 衰退排程（每 30 分鐘執行） | A3 | T09 | Cron 正確執行，屬性依規格衰退，生命歸 0 時標記死亡 |
-| T12 | API 安全審計 | A4 | T06-T11 | 無 SQL injection、無敏感資料外洩、JWT 驗證正確 |
-| T13 | Backend 單元測試（覆蓋率 > 70%） | A4 | T06-T11 | `npm test` 通過，覆蓋率報告達標 |
+| Task ID | 任務名稱 | 負責人 | 模型 | 前置任務 | 驗收條件 |
+|---------|---------|--------|------|---------|---------|
+| T05 | Prisma Schema 設計（User / Pet / FeedLog） | A3 | **opus** | T02 | Schema 通過 `prisma validate`，migration 可執行 |
+| T06 | 用戶註冊 API（POST /auth/register） | A3 | sonnet | T05 | 可建立帳號，密碼 bcrypt 加密，回傳 JWT |
+| T07 | 用戶登入 API（POST /auth/login） | A3 | sonnet | T06 | 正確帳密回傳 JWT，錯誤帳密回傳 401 |
+| T08 | 電子雞初始化 API（POST /pet/init） | A3 | sonnet | T05 | 可建立電子雞、隨機屬性、檢查重置次數上限 5 次 |
+| T09 | 電子雞查詢 API（GET /pet） | A3 | sonnet | T08 | 回傳當前電子雞完整屬性與狀態 |
+| T10 | 餵食 API（POST /pet/feed）骰子邏輯 | A3 | **opus** | T09 | 骰子邏輯正確，屬性更新，記錄 FeedLog，檢查每日次數上限 |
+| T11 | 衰退排程（每 30 分鐘執行） | A3 | **opus** | T09 | Cron 正確執行，屬性依規格衰退，生命歸 0 時標記死亡 |
+| T12 | API 安全審計 | A4 | **opus** | T06-T11 | 無 SQL injection、無敏感資料外洩、JWT 驗證正確 |
+| T13 | Backend 單元測試（覆蓋率 > 70%） | A4 | sonnet | T06-T11 | `npm test` 通過，覆蓋率報告達標 |
 
 ---
 
 ### Phase 2：前端核心
 
-| Task ID | 任務名稱 | 負責人 | 前置任務 | 驗收條件 |
-|---------|---------|--------|---------|---------|
-| T14 | Frontend 專案設定（Vite + React + TS + Tailwind + PWA） | A2 | T01 | `npm run dev` 可啟動，Lighthouse PWA 基礎項目通過 |
-| T15 | 登入 / 註冊頁面 | A2 | T14, T07 | 可完成註冊、登入流程，表單驗證正確 |
-| T16 | 電子雞初始化頁面（命名 + 屬性隨機 + 重置） | A2 | T15, T08 | 顯示隨機屬性、剩餘重置次數，確認後跳轉主頁 |
-| T17 | 主遊戲頁面（電子雞展示 + 屬性面板） | A2 | T16, T09 | 顯示電子雞圖示（依成長階段）、四大屬性、每日餵食次數 |
-| T18 | 餵食流程（骰子動畫 + 結果展示） | A2 | T17, T10 | 骰子動畫流暢，結果顯示事件名稱與屬性變化 |
-| T19 | 死亡頁面（悼念 + 重新領養） | A2 | T17 | 死亡時正確顯示，可重新領養 |
-| T20 | 像素風視覺統一（Sprite / 色調 / 字型） | A2 | T14 | 所有頁面視覺一致，像素風格統一 |
-| T21 | RWD 手機適配 | A2 | T15-T19 | 320px ~ 1440px 均可正常操作 |
-| T22 | Frontend UI 測試 | A4 | T15-T21 | 主要流程（註冊→初始化→餵食）E2E 測試通過 |
+| Task ID | 任務名稱 | 負責人 | 模型 | 前置任務 | 驗收條件 |
+|---------|---------|--------|------|---------|---------|
+| T14 | Frontend 專案設定（Vite + React + TS + Tailwind + PWA） | A2 | sonnet | T01 | `npm run dev` 可啟動，Lighthouse PWA 基礎項目通過 |
+| T15 | 登入 / 註冊頁面 | A2 | sonnet | T14, T07 | 可完成註冊、登入流程，表單驗證正確 |
+| T16 | 電子雞初始化頁面（命名 + 屬性隨機 + 重置） | A2 | sonnet | T15, T08 | 顯示隨機屬性、剩餘重置次數，確認後跳轉主頁 |
+| T17 | 主遊戲頁面（電子雞展示 + 屬性面板） | A2 | **opus** | T16, T09 | 顯示電子雞圖示（依成長階段）、四大屬性、每日餵食次數 |
+| T18 | 餵食流程（骰子動畫 + 結果展示） | A2 | **opus** | T17, T10 | 骰子動畫流暢，結果顯示事件名稱與屬性變化 |
+| T19 | 死亡頁面（悼念 + 重新領養） | A2 | sonnet | T17 | 死亡時正確顯示，可重新領養 |
+| T20 | 像素風視覺統一（Sprite / 色調 / 字型） | A2 | **opus** | T14 | 所有頁面視覺一致，像素風格統一 |
+| T21 | RWD 手機適配 | A2 | sonnet | T15-T19 | 320px ~ 1440px 均可正常操作 |
+| T22 | Frontend UI 測試 | A4 | sonnet | T15-T21 | 主要流程（註冊→初始化→餵食）E2E 測試通過 |
 
 ---
 
 ### Phase 3：PWA & 整合
 
-| Task ID | 任務名稱 | 負責人 | 前置任務 | 驗收條件 |
-|---------|---------|--------|---------|---------|
-| T23 | PWA 推播通知（餵食提醒，1.5 小時未餵食觸發） | A2 + A3 | T11, T18 | 瀏覽器收到推播通知，點擊可開啟遊戲 |
-| T24 | PWA 離線支援（顯示最後同步狀態） | A2 | T14 | 無網路時可開啟 App，顯示最後屬性狀態 |
-| T25 | 前後端整合測試 | A1 + A4 | T23, T24 | 完整用戶流程無錯誤：註冊→命名→餵食→衰退→死亡 |
+| Task ID | 任務名稱 | 負責人 | 模型 | 前置任務 | 驗收條件 |
+|---------|---------|--------|------|---------|---------|
+| T23 | PWA 推播通知（餵食提醒，1.5 小時未餵食觸發） | A2 + A3 | **opus** | T11, T18 | 瀏覽器收到推播通知，點擊可開啟遊戲 |
+| T24 | PWA 離線支援（顯示最後同步狀態） | A2 | sonnet | T14 | 無網路時可開啟 App，顯示最後屬性狀態 |
+| T25 | 前後端整合測試 | A1 + A4 | **opus** | T23, T24 | 完整用戶流程無錯誤：註冊→命名→餵食→衰退→死亡 |
 
 ---
 
 ### Phase 4：部署
 
-| Task ID | 任務名稱 | 負責人 | 前置任務 | 驗收條件 |
-|---------|---------|--------|---------|---------|
-| T26 | Docker Compose 正式環境配置（含環境變數） | A1 | T25 | `docker-compose up -d` 正常啟動，資料持久化 |
-| T27 | Cloudflare Tunnel 設定（tamagotchi.smart-codings.com） | A1 | T26 | 從外部可訪問 `https://tamagotchi.smart-codings.com` |
-| T28 | LaunchAgent 開機自啟 | A1 | T27 | 重開機後服務自動啟動 |
-| T29 | 正式環境全流程驗收測試 | A4 | T28 | 在正式環境完成完整遊戲流程，無異常 |
+| Task ID | 任務名稱 | 負責人 | 模型 | 前置任務 | 驗收條件 |
+|---------|---------|--------|------|---------|---------|
+| T26 | Docker Compose 正式環境配置（含環境變數） | A1 | sonnet | T25 | `docker-compose up -d` 正常啟動，資料持久化 |
+| T27 | Cloudflare Tunnel 設定（tamagotchi.smart-codings.com） | A1 | sonnet | T26 | 從外部可訪問 `https://tamagotchi.smart-codings.com` |
+| T28 | LaunchAgent 開機自啟 | A1 | sonnet | T27 | 重開機後服務自動啟動 |
+| T29 | 正式環境全流程驗收測試 | A4 | **opus** | T28 | 在正式環境完成完整遊戲流程，無異常 |
 
 ---
 
