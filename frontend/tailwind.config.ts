@@ -24,11 +24,16 @@ export default {
       animation: {
         bounce: 'bounce 1s infinite',
         wiggle: 'wiggle 0.5s ease-in-out infinite',
+        float: 'float 2s ease-in-out infinite',
       },
       keyframes: {
         wiggle: {
           '0%, 100%': { transform: 'rotate(-3deg)' },
           '50%': { transform: 'rotate(3deg)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
         },
       },
     },
