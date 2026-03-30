@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY prisma ./prisma/
-RUN npm ci --ignore-scripts && npx prisma generate
+RUN npm install --ignore-scripts && npx prisma generate
 
 COPY tsconfig.json ./
 COPY src ./src/
@@ -18,11 +18,11 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 COPY package*.json ./
 COPY prisma ./prisma/
-RUN npm ci --only=production --ignore-scripts && npx prisma generate
+RUN npm install --omit=dev --ignore-scripts && npx prisma generate
 
 COPY --from=builder /app/dist ./dist/
 
 USER appuser
-EXPOSE 3000
+EXPOSE 3002
 
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
