@@ -46,8 +46,8 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-cream p-4">
-      <div className="w-full max-w-md border-4 border-brown bg-cream-dark p-8">
-        <h1 className="mb-8 text-center font-pixel text-xl text-brown">
+      <div className="w-full max-w-md border-4 border-brown bg-cream-dark p-4 sm:p-8">
+        <h1 className="mb-6 sm:mb-8 text-center font-pixel text-base sm:text-xl text-brown">
           AI 電子雞
         </h1>
         <h2 className="mb-6 text-center font-pixel text-sm text-brown-light">
@@ -69,7 +69,7 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border-2 border-brown bg-cream p-3 font-pixel text-xs text-brown-dark outline-none focus:border-orange"
+              className="w-full border-2 border-brown bg-cream p-3 font-pixel text-xs text-brown-dark outline-none focus:border-orange min-h-[48px]"
               placeholder="you@example.com"
             />
           </div>
@@ -82,7 +82,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border-2 border-brown bg-cream p-3 font-pixel text-xs text-brown-dark outline-none focus:border-orange"
+              className="w-full border-2 border-brown bg-cream p-3 font-pixel text-xs text-brown-dark outline-none focus:border-orange min-h-[48px]"
               placeholder="********"
             />
           </div>

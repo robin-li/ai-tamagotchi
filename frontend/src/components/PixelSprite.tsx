@@ -16,9 +16,9 @@ interface PixelSpriteProps {
 }
 
 const SIZE_MAP = {
-  sm: 'text-4xl',
-  md: 'text-6xl',
-  lg: 'text-8xl',
+  sm: 'text-3xl sm:text-4xl',
+  md: 'text-5xl sm:text-6xl',
+  lg: 'text-6xl sm:text-8xl',
 } as const;
 
 export default function PixelSprite({ stage, size = 'lg', animate = true }: PixelSpriteProps) {

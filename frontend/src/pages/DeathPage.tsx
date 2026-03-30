@@ -37,7 +37,7 @@ export default function DeathPage() {
         transition={{ duration: 0.8 }}
         className="flex flex-col items-center"
       >
-        <span className="text-8xl drop-shadow-lg">🪦</span>
+        <span className="text-6xl sm:text-8xl drop-shadow-lg">🪦</span>
 
         <motion.p
           initial={{ opacity: 0 }}
@@ -81,7 +81,7 @@ export default function DeathPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2.2, duration: 0.6 }}
       >
-        <PixelButton onClick={handleAdopt}>
+        <PixelButton onClick={handleAdopt} className="w-full max-w-xs sm:w-auto">
           🌱 領養新電子雞
         </PixelButton>
       </motion.div>
