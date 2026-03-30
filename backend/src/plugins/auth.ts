@@ -17,6 +17,11 @@ async function authPlugin(
     throw new Error('JWT_SECRET environment variable is not set');
   }
 
+  // T12 安全審計 H1：JWT_SECRET 最少 32 字元
+  if (jwtSecret.length < 32) {
+    throw new Error('JWT_SECRET must be at least 32 characters long');
+  }
+
   fastify.register(fastifyJwt, {
     secret: jwtSecret,
     sign: {
