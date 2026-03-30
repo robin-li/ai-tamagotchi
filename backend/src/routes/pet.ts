@@ -184,4 +184,64 @@ export default async function petRoutes(
       }
     }
   );
+
+  // GET /api/pet/me
+  fastify.get(
+    '/me',
+    {
+      onRequest: [fastify.authenticate],
+    },
+    async (request, reply) => {
+      try {
+        const user = request.user as JwtPayload;
+
+        // Find user's current alive pet
+        const pet = await prisma.pet.findFirst({
+          where: {
+            userId: user.userId,
+            isAlive: true,
+          },
+          select: {
+            id: true,
+            name: true,
+            hp: true,
+            stamina: true,
+            appetite: true,
+            bodySize: true,
+            resetCount: true,
+            feedCount: true,
+            stage: true,
+            isAlive: true,
+            lastFedAt: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        });
+
+        // If no pet exists, return null
+        if (!pet) {
+          return reply.status(200).send({
+            pet: null,
+          });
+        }
+
+        // Calculate remaining resets and daily feed limit
+        const remainingResets = 5 - pet.resetCount;
+        const dailyFeedLimit = Math.floor(pet.stamina / 20) + 1;
+
+        return reply.status(200).send({
+          pet: {
+            ...pet,
+            remainingResets,
+            dailyFeedLimit,
+          },
+        });
+      } catch (error) {
+        fastify.log.error(error);
+        return reply.status(500).send({
+          error: 'Internal server error',
+        });
+      }
+    }
+  );
 }
