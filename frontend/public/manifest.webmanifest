@@ -2,11 +2,12 @@
   "name": "AI 電子雞",
   "short_name": "電子雞",
   "description": "AI 電子雞 — 領養你的虛擬寵物！",
-  "start_url": "/",
+  "start_url": "/game",
   "display": "standalone",
   "background_color": "#FFF8E7",
   "theme_color": "#FFA500",
   "orientation": "portrait",
+  "permissions": ["notifications"],
   "icons": [
     {
       "src": "/icons/icon-192.png",

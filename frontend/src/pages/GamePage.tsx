@@ -5,6 +5,8 @@ import { getPet } from '../api/pet';
 import StatBar from '../components/StatBar';
 import PixelSprite from '../components/PixelSprite';
 import PixelButton from '../components/PixelButton';
+import NotificationPrompt from '../components/NotificationPrompt';
+import usePushNotification from '../hooks/usePushNotification';
 
 /** 距離上次餵食是否超過 1.5 小時 */
 function isHungry(lastFedAt: string): boolean {
@@ -14,6 +16,7 @@ function isHungry(lastFedAt: string): boolean {
 
 export default function GamePage() {
   const navigate = useNavigate();
+  const { permission, supported, requestPermission, checkAndNotify } = usePushNotification();
 
   const {
     data: pet,
@@ -40,6 +43,13 @@ export default function GamePage() {
       navigate('/init', { replace: true });
     }
   }, [isError, isLoading, pet, navigate]);
+
+  // 檢查是否需要發送餵食提醒通知
+  useEffect(() => {
+    if (pet?.lastFedAt && pet?.name) {
+      checkAndNotify(pet.name, pet.lastFedAt);
+    }
+  }, [pet, checkAndNotify]);
 
   // --- 載入中 ---
   if (isLoading) {
@@ -108,6 +118,11 @@ export default function GamePage() {
       >
         {canFeed ? '🍽️ 餵食！' : '今日餵食次數已用完'}
       </PixelButton>
+
+      {/* 通知授權提示 */}
+      {supported && (
+        <NotificationPrompt permission={permission} onRequest={requestPermission} />
+      )}
     </div>
   );
 }
