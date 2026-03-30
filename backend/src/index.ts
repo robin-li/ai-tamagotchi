@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import 'dotenv/config';
 import authPlugin from './plugins/auth';
 import authRoutes from './routes/auth';
+import petRoutes from './routes/pet';
 
 const fastify = Fastify({
   logger: {
@@ -24,6 +25,7 @@ fastify.register(authPlugin);
 
 // Register routes
 fastify.register(authRoutes, { prefix: '/api/auth' });
+fastify.register(petRoutes, { prefix: '/api/pet' });
 
 // Health check
 fastify.get('/health', async () => {
