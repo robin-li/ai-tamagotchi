@@ -37,7 +37,7 @@ export default function InitPage() {
   const canConfirm = nameValid && stats !== null;
 
   const mutation = useMutation({
-    mutationFn: () => initPet(name, stats!),
+    mutationFn: () => initPet(name), // 只傳 name，後端自行骰屬性
     onSuccess: () => navigate('/game'),
   });
 
