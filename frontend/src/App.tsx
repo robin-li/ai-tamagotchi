@@ -3,6 +3,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import InitPage from './pages/InitPage';
 import GamePage from './pages/GamePage';
+import FeedPage from './pages/FeedPage';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('token');
@@ -18,7 +19,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/init" element={<PrivateRoute><InitPage /></PrivateRoute>} />
         <Route path="/game" element={<PrivateRoute><GamePage /></PrivateRoute>} />
-        <Route path="/feed" element={<PrivateRoute><Placeholder page="餵食動畫" /></PrivateRoute>} />
+        <Route path="/feed" element={<PrivateRoute><FeedPage /></PrivateRoute>} />
         <Route path="/death" element={<PrivateRoute><Placeholder page="死亡" /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
