@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PixelButton from '../components/PixelButton';
 import { getConfig } from '../api/config';
+import { testAiModel } from '../api/ai';
 import {
   type Provider,
   fetchModelsByProvider,
@@ -36,6 +37,8 @@ export default function SettingsPage() {
   const [showKey, setShowKey] = useState(false);
   const [models, setModels] = useState<string[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
   const [toast, setToast] = useState<Toast>(null);
 
   // Auto-dismiss toast
@@ -83,6 +86,32 @@ export default function SettingsPage() {
     localStorage.setItem(AI_MODEL_KEY, model);
     setToast({ message: '設定已儲存', type: 'success' });
   };
+
+  const handleTestModel = useCallback(async () => {
+    if (!apiKey.trim()) {
+      setToast({ message: '請先輸入 API Key', type: 'error' });
+      return;
+    }
+    if (!model.trim()) {
+      setToast({ message: '請先選擇模型', type: 'error' });
+      return;
+    }
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const result = await testAiModel(provider, apiKey.trim(), model.trim());
+      if (result.ok) {
+        setTestResult({ ok: true, message: `✅ 成功！AI 回應：「${result.reply}」` });
+      } else {
+        setTestResult({ ok: false, message: `❌ 失敗：${result.error}` });
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '測試失敗';
+      setTestResult({ ok: false, message: `❌ 失敗：${msg}` });
+    } finally {
+      setTesting(false);
+    }
+  }, [provider, apiKey, model]);
 
   const selectClass =
     'w-full border-4 border-brown bg-cream px-3 py-2 font-pixel text-xs text-brown-dark shadow-pixel-sm outline-none focus:border-orange';
@@ -198,6 +227,29 @@ export default function SettingsPage() {
           <PixelButton onClick={handleSave} className="!py-3 mt-2">
             儲存設定
           </PixelButton>
+
+          {/* Test Model */}
+          <PixelButton
+            variant="secondary"
+            onClick={handleTestModel}
+            disabled={testing || !apiKey.trim() || !model.trim()}
+            className="!py-2 !text-[10px]"
+          >
+            {testing ? '測試中...' : '測試模型'}
+          </PixelButton>
+
+          {/* Test Result */}
+          {testResult && (
+            <div
+              className={`border-2 px-3 py-2 font-pixel text-[10px] ${
+                testResult.ok
+                  ? 'border-green-700 bg-green-100 text-green-800'
+                  : 'border-red-700 bg-red-100 text-red-800'
+              }`}
+            >
+              {testResult.message}
+            </div>
+          )}
         </div>
       </div>
     </div>
