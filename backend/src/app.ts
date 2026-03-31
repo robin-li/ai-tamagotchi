@@ -3,6 +3,7 @@ import authPlugin from './plugins/auth';
 import authRoutes from './routes/auth';
 import petRoutes from './routes/pet';
 import configRoutes from './routes/config';
+import aiRoutes from './routes/ai';
 
 export async function build(): Promise<FastifyInstance> {
   const fastify = Fastify({
@@ -28,6 +29,7 @@ export async function build(): Promise<FastifyInstance> {
   await fastify.register(authRoutes, { prefix: '/api/auth' });
   await fastify.register(petRoutes, { prefix: '/api/pet' });
   await fastify.register(configRoutes, { prefix: '/api/config' });
+  await fastify.register(aiRoutes, { prefix: '/api/ai' });
 
   // Health check
   fastify.get('/health', async () => {
