@@ -5,8 +5,10 @@ import { getPet } from '../api/pet';
 import StatBar from '../components/StatBar';
 import PixelSprite from '../components/PixelSprite';
 import PixelButton from '../components/PixelButton';
+import PetSpeech from '../components/PetSpeech';
 import NotificationPrompt from '../components/NotificationPrompt';
 import usePushNotification from '../hooks/usePushNotification';
+import useAIChat from '../hooks/useAIChat';
 import { getPetFromCache } from '../services/offlineStorage';
 
 /** 距離上次餵食是否超過 1.5 小時 */
@@ -29,6 +31,8 @@ export default function GamePage() {
     refetchInterval: 30_000,
     retry: 1,
   });
+
+  const aiChat = useAIChat();
 
   // TODO: T10 完成後改接真實 GET /api/pet/feed/today
   const feedInfo = { count: 0, max: 3 };
@@ -102,11 +106,42 @@ export default function GamePage() {
 
       {/* 中央主視覺 */}
       <div className="mb-4 flex flex-col items-center">
-        <PixelSprite stage={pet.stage} size="lg" />
+        <PixelSprite
+          stage={pet.stage}
+          size="lg"
+          onClick={() =>
+            aiChat.trigger({
+              trigger: 'tap',
+              petName: pet.name,
+              petHP: pet.stats.health,
+            })
+          }
+        />
         <p className="mt-3 font-pixel text-xs text-brown">{pet.name}</p>
         <p className="mt-1 font-pixel text-[10px] text-brown-light">
           累計餵食 {pet.totalFeedings} 次
         </p>
+
+        {/* AI 對話泡泡 */}
+        {aiChat.loading && (
+          <p className="mt-2 font-pixel text-[10px] text-brown-light animate-pulse">
+            思考中...
+          </p>
+        )}
+        {aiChat.isCoolingDown && !aiChat.message && (
+          <PetSpeech
+            message={`還在想事情，剩 ${aiChat.cooldownText}`}
+            emotion="neutral"
+            visible
+          />
+        )}
+        {aiChat.message && (
+          <PetSpeech
+            message={aiChat.message}
+            emotion={aiChat.emotion}
+            visible
+          />
+        )}
       </div>
 
       {/* 衰退警告 */}
