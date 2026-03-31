@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
+import { getPet } from '../api/pet';
 import { AxiosError } from 'axios';
 import PixelButton from '../components/PixelButton';
 
@@ -31,8 +32,9 @@ export default function LoginPage() {
     try {
       const res = await login(email, password);
       localStorage.setItem('token', res.token);
-      // TODO: check if user has a pet → /game, else /init
-      navigate('/init');
+      // Check if user already has a pet → /game, else /init
+      const pet = await getPet().catch(() => null);
+      navigate(pet ? '/game' : '/init');
     } catch (err) {
       if (err instanceof AxiosError && err.response?.data?.message) {
         setError(err.response.data.message);
