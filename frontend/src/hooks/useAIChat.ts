@@ -127,6 +127,7 @@ export default function useAIChat(): AIChatResult {
       // 無 API Key → 靜默跳過
       if (!apiKey || !provider || !model) {
         setMessage(null);
+        setLoading(false);
         return;
       }
 
@@ -138,6 +139,7 @@ export default function useAIChat(): AIChatResult {
           const cooldownMs = getCooldownMs(petHP);
           if (elapsed < cooldownMs) {
             startCooldownTimer(petHP);
+            setLoading(false);
             return;
           }
         }

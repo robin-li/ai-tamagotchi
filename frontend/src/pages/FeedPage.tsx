@@ -55,8 +55,14 @@ export default function FeedPage() {
       apiDoneRef.current = true;
       tryShowResult();
     },
-    onError: (err: Error) => {
-      setError(err.message || '餵食失敗，請稍後再試');
+    onError: (err: any) => {
+      // 解析 axios 錯誤訊息，顯示友善中文
+      const apiMessage = err?.response?.data?.error;
+      const friendlyMessage =
+        typeof apiMessage === 'string' && apiMessage.length > 0
+          ? apiMessage
+          : '餵食失敗，請稍後再試';
+      setError(friendlyMessage);
     },
   });
 
