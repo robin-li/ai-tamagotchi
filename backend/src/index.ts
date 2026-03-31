@@ -3,6 +3,7 @@ import 'dotenv/config';
 import authPlugin from './plugins/auth';
 import authRoutes from './routes/auth';
 import petRoutes from './routes/pet';
+import configRoutes from './routes/config';
 import { startDecayJob } from './jobs/decayJob';
 
 const fastify = Fastify({
@@ -27,6 +28,7 @@ fastify.register(authPlugin);
 // Register routes
 fastify.register(authRoutes, { prefix: '/api/auth' });
 fastify.register(petRoutes, { prefix: '/api/pet' });
+fastify.register(configRoutes, { prefix: '/api/config' });
 
 // Health check
 fastify.get('/health', async () => {
