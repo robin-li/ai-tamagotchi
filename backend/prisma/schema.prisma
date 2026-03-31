@@ -35,20 +35,21 @@ model User {
 }
 
 model Pet {
-  id         String   @id @default(uuid())
-  userId     String
-  name       String
-  hp         Int      @default(100)
-  stamina    Int      @default(100)
-  appetite   Int      @default(50)
-  bodySize   Int      @default(50)
-  resetCount Int      @default(0)
-  feedCount  Int      @default(0)
-  stage      Stage    @default(egg)
-  isAlive    Boolean  @default(true)
-  lastFedAt  DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  hp          Int      @default(100)
+  stamina     Int      @default(100)
+  appetite    Int      @default(50)
+  bodySize    Int      @default(50)
+  resetCount  Int      @default(0)
+  feedCount   Int      @default(0)
+  stage       Stage    @default(egg)
+  isAlive     Boolean  @default(true)
+  personality String   @default("活潑外向")
+  lastFedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   feedLogs FeedLog[]
