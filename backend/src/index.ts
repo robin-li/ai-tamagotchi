@@ -4,6 +4,7 @@ import authPlugin from './plugins/auth';
 import authRoutes from './routes/auth';
 import petRoutes from './routes/pet';
 import configRoutes from './routes/config';
+import aiRoutes from './routes/ai';
 import { startDecayJob } from './jobs/decayJob';
 
 const fastify = Fastify({
@@ -29,6 +30,7 @@ fastify.register(authPlugin);
 fastify.register(authRoutes, { prefix: '/api/auth' });
 fastify.register(petRoutes, { prefix: '/api/pet' });
 fastify.register(configRoutes, { prefix: '/api/config' });
+fastify.register(aiRoutes, { prefix: '/api/ai' });
 
 // Health check
 fastify.get('/health', async () => {

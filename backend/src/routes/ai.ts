@@ -46,7 +46,9 @@ export default async function aiRoutes(
             body: JSON.stringify({
               model,
               messages: [{ role: 'user', content: testMessage }],
-              max_tokens: 50,
+              // gpt-4o 以上新模型用 max_completion_tokens，舊模型用 max_tokens
+              // 同時帶兩個，舊模型會忽略 max_completion_tokens，新模型會忽略 max_tokens
+              max_completion_tokens: 50,
             }),
           });
 

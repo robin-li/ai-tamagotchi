@@ -45,7 +45,7 @@ async function sendOpenAICompatible(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({ model, messages, max_tokens: 100 }),
+    body: JSON.stringify({ model, messages, max_completion_tokens: 100 }),
   });
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   const data = await res.json();
