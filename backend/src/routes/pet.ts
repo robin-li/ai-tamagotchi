@@ -4,6 +4,26 @@ import { prisma } from '../lib/prisma';
 import { JwtPayload } from '../plugins/auth';
 import { Stage, Prisma } from '@prisma/client';
 
+// Map backend Pet (Prisma) → Frontend format
+const STAGE_MAP: Record<string, string> = {
+  egg: 'egg', infant: 'baby', growing: 'child', mature: 'adult', elder: 'elder',
+};
+function mapPet(pet: Record<string, unknown>) {
+  const { hp, bodySize, stage, resetCount, feedCount, ...rest } = pet;
+  return {
+    ...rest,
+    stats: {
+      health: hp,
+      stamina: pet.stamina,
+      appetite: pet.appetite,
+      size: bodySize,
+    },
+    stage: STAGE_MAP[stage as string] ?? stage,
+    totalFeedings: feedCount,
+    remainingResets: typeof pet.remainingResets === 'number' ? pet.remainingResets : (5 - (resetCount as number)),
+  };
+}
+
 const initPetSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(10, 'Name must be at most 10 characters'),
 });
@@ -143,7 +163,7 @@ export default async function petRoutes(
         });
 
         return reply.status(201).send({
-          pet,
+          pet: mapPet(pet as unknown as Record<string, unknown>),
         });
       } catch (error) {
         fastify.log.error(error);
@@ -290,12 +310,12 @@ export default async function petRoutes(
         });
 
         return reply.status(200).send({
-          pet: {
-            ...pet,
+          pet: mapPet({
+            ...pet as unknown as Record<string, unknown>,
             remainingResets,
             dailyFeedLimit,
             dailyFeedCount,
-          },
+          }),
         });
       } catch (error) {
         fastify.log.error(error);
@@ -411,14 +431,20 @@ export default async function petRoutes(
           }),
         ]);
 
+        // Map statChanges to frontend format
+        const mappedStatChanges: Record<string, number> = {};
+        if (statChanges.hp !== undefined) mappedStatChanges.health = statChanges.hp;
+        if (statChanges.stamina !== undefined) mappedStatChanges.stamina = statChanges.stamina;
+        if (statChanges.appetite !== undefined) mappedStatChanges.appetite = statChanges.appetite;
+        if (statChanges.bodySize !== undefined) mappedStatChanges.size = statChanges.bodySize;
+
         return reply.status(200).send({
           result: {
-            dice1,
-            dice2,
+            dice: [dice1, dice2],
             total,
             eventName,
-            statChanges,
-            pet: updatedPet,
+            statChanges: mappedStatChanges,
+            pet: mapPet(updatedPet as unknown as Record<string, unknown>),
             isDead,
           },
         });
