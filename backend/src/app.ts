@@ -2,6 +2,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 import authPlugin from './plugins/auth';
 import authRoutes from './routes/auth';
 import petRoutes from './routes/pet';
+import configRoutes from './routes/config';
 
 export async function build(): Promise<FastifyInstance> {
   const fastify = Fastify({
@@ -26,6 +27,7 @@ export async function build(): Promise<FastifyInstance> {
   // Register routes
   await fastify.register(authRoutes, { prefix: '/api/auth' });
   await fastify.register(petRoutes, { prefix: '/api/pet' });
+  await fastify.register(configRoutes, { prefix: '/api/config' });
 
   // Health check
   fastify.get('/health', async () => {
