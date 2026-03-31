@@ -28,4 +28,4 @@ RUN chown -R appuser:appgroup /app
 USER appuser
 EXPOSE 3002
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate && node dist/index.js"]
