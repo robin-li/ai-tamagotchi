@@ -4,7 +4,6 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY prisma ./prisma/
-COPY prisma.config.ts ./
 RUN npm install --ignore-scripts && npx prisma generate
 
 COPY tsconfig.json ./
@@ -19,7 +18,6 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 COPY package*.json ./
 COPY prisma ./prisma/
-COPY prisma.config.ts ./
 RUN npm install --omit=dev --ignore-scripts && npx prisma generate
 
 COPY --from=builder /app/dist ./dist/
@@ -30,5 +28,4 @@ RUN chown -R appuser:appgroup /app
 USER appuser
 EXPOSE 3002
 
-# prisma migrate deploy uses prisma.config.ts which reads DATABASE_URL from env
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
