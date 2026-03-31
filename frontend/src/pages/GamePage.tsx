@@ -87,12 +87,17 @@ export default function GamePage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-cream px-4 py-6">
-      {/* 頂部：名字 + 登出 */}
+      {/* 頂部：名字 + 設定 + 登出 */}
       <div className="mb-4 sm:mb-6 flex w-full max-w-md items-center justify-between">
         <h1 className="font-pixel text-xs sm:text-sm text-brown-dark">{pet.name}</h1>
-        <PixelButton variant="secondary" onClick={handleLogout} className="!px-3 !py-1 !text-[10px] !border-2">
-          登出
-        </PixelButton>
+        <div className="flex gap-2">
+          <PixelButton variant="secondary" onClick={() => navigate('/settings')} className="!px-3 !py-1 !text-[10px] !border-2">
+            設定
+          </PixelButton>
+          <PixelButton variant="secondary" onClick={handleLogout} className="!px-3 !py-1 !text-[10px] !border-2">
+            登出
+          </PixelButton>
+        </div>
       </div>
 
       {/* 中央主視覺 */}
