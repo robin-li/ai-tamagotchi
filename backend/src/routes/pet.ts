@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { JwtPayload } from '../plugins/auth';
 import { Stage, Prisma } from '@prisma/client';
+import { getRandomPersonality } from '../lib/personalities';
 
 // Map backend Pet (Prisma) → Frontend format
 const STAGE_MAP: Record<string, string> = {
@@ -133,6 +134,9 @@ export default async function petRoutes(
         // Generate random stats
         const stats = generateRandomStats();
 
+        // Randomly assign personality
+        const personality = getRandomPersonality();
+
         // Create new pet
         const pet = await prisma.pet.create({
           data: {
@@ -146,6 +150,7 @@ export default async function petRoutes(
             feedCount: 0,
             stage: 'egg',
             isAlive: true,
+            personality: personality.name,
           },
           select: {
             id: true,
@@ -158,6 +163,7 @@ export default async function petRoutes(
             feedCount: true,
             stage: true,
             isAlive: true,
+            personality: true,
             createdAt: true,
           },
         });
@@ -215,6 +221,9 @@ export default async function petRoutes(
         // Generate new random stats
         const stats = generateRandomStats();
 
+        // Randomly assign new personality
+        const personality = getRandomPersonality();
+
         // Update pet with new stats and increment resetCount
         const updatedPet = await prisma.pet.update({
           where: {
@@ -226,6 +235,7 @@ export default async function petRoutes(
             appetite: stats.appetite,
             bodySize: stats.bodySize,
             resetCount: existingPet.resetCount + 1,
+            personality: personality.name,
           },
           select: {
             id: true,
@@ -238,13 +248,16 @@ export default async function petRoutes(
             feedCount: true,
             stage: true,
             isAlive: true,
+            personality: true,
             createdAt: true,
           },
         });
 
         return reply.status(200).send({
-          pet: updatedPet,
-          remainingResets: 5 - updatedPet.resetCount,
+          pet: mapPet({
+            ...updatedPet as unknown as Record<string, unknown>,
+            remainingResets: 5 - updatedPet.resetCount,
+          }),
         });
       } catch (error) {
         fastify.log.error(error);
@@ -282,6 +295,7 @@ export default async function petRoutes(
             feedCount: true,
             stage: true,
             isAlive: true,
+            personality: true,
             lastFedAt: true,
             createdAt: true,
             updatedAt: true,
@@ -414,6 +428,7 @@ export default async function petRoutes(
               feedCount: true,
               stage: true,
               isAlive: true,
+              personality: true,
               lastFedAt: true,
               createdAt: true,
               updatedAt: true,
