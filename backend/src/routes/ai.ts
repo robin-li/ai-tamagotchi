@@ -15,7 +15,7 @@ export default async function aiRoutes(
   fastify.post(
     '/test',
     {
-      onRequest: [fastify.authenticate],
+      onRequest: [],
     },
     async (request, reply) => {
       const parsed = testAiSchema.safeParse(request.body);
