@@ -22,6 +22,9 @@ RUN npm install --omit=dev --ignore-scripts && npx prisma generate
 
 COPY --from=builder /app/dist ./dist/
 
+# Fix permissions
+RUN chown -R appuser:appgroup /app
+
 USER appuser
 EXPOSE 3002
 
