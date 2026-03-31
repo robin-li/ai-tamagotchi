@@ -13,6 +13,7 @@ interface PixelSpriteProps {
   stage: GrowthStage;
   size?: 'sm' | 'md' | 'lg';
   animate?: boolean;
+  onClick?: () => void;
 }
 
 const SIZE_MAP = {
@@ -21,12 +22,14 @@ const SIZE_MAP = {
   lg: 'text-6xl sm:text-8xl',
 } as const;
 
-export default function PixelSprite({ stage, size = 'lg', animate = true }: PixelSpriteProps) {
+export default function PixelSprite({ stage, size = 'lg', animate = true, onClick }: PixelSpriteProps) {
   return (
     <motion.span
-      className={`inline-block ${SIZE_MAP[size]} leading-none`}
+      className={`inline-block ${SIZE_MAP[size]} leading-none ${onClick ? 'cursor-pointer' : ''}`}
       animate={animate ? { y: [0, -10, 0] } : undefined}
       transition={animate ? { duration: 2, repeat: Infinity, ease: 'easeInOut' } : undefined}
+      onClick={onClick}
+      whileTap={onClick ? { scale: 1.15 } : undefined}
     >
       {STAGE_EMOJI[stage]}
     </motion.span>

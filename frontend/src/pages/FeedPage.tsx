@@ -6,6 +6,8 @@ import { feedPet } from '../api/pet';
 import type { FeedResult, PetStats } from '../types';
 import DiceDisplay from '../components/DiceDisplay';
 import PixelButton from '../components/PixelButton';
+import PetSpeech from '../components/PetSpeech';
+import useAIChat from '../hooks/useAIChat';
 
 const ROLL_DURATION = 2000; // 骰子動畫持續 2 秒
 
@@ -39,6 +41,8 @@ export default function FeedPage() {
   const [phase, setPhase] = useState<Phase>('rolling');
   const [result, setResult] = useState<FeedResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const aiChat = useAIChat();
+  const aiTriggeredRef = useRef(false);
 
   const rollStartRef = useRef(Date.now());
   const apiDoneRef = useRef(false);
@@ -71,6 +75,29 @@ export default function FeedPage() {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 結果出來後觸發 AI 對話
+  useEffect(() => {
+    if (phase === 'result' && result && !aiTriggeredRef.current) {
+      aiTriggeredRef.current = true;
+      const petName = localStorage.getItem('tamagotchi:pet')
+        ? JSON.parse(localStorage.getItem('tamagotchi:pet')!).name
+        : '電子雞';
+      const petHP = localStorage.getItem('tamagotchi:pet')
+        ? JSON.parse(localStorage.getItem('tamagotchi:pet')!).stats?.health ?? 50
+        : 50;
+      aiChat.trigger({
+        trigger: 'feed',
+        petName,
+        petHP,
+        feedContext: {
+          diceTotal: result.total,
+          eventName: EVENT_TABLE[result.total] ?? result.eventName,
+          statChanges: result.statChanges as Record<string, number>,
+        },
+      });
+    }
+  }, [phase, result, aiChat]);
 
   const tryShowResult = useCallback(() => {
     const elapsed = Date.now() - rollStartRef.current;
@@ -156,6 +183,22 @@ export default function FeedPage() {
                 },
               )}
             </div>
+
+            {/* AI 對話泡泡 */}
+            {aiChat.loading && (
+              <p className="mb-4 font-pixel text-[10px] text-brown-light animate-pulse">
+                思考中...
+              </p>
+            )}
+            {aiChat.message && (
+              <div className="mb-4">
+                <PetSpeech
+                  message={aiChat.message}
+                  emotion={aiChat.emotion}
+                  visible
+                />
+              </div>
+            )}
 
             {/* 進化提示 */}
             {result.newStage && (
